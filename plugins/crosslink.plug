@@ -1,0 +1,9 @@
+[Core]
+name = crosslink
+module = crosslink
+
+[Documentation]
+description = cross link identities
+
+[Python]
+version = 3

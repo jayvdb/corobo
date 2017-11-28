@@ -6,3 +6,4 @@ IGitt==0.4.1.dev20171129151739
 gitpython
 vcrpy
 ramlient
+crosslink~=0.2.0
