@@ -154,11 +154,22 @@ class LabHub(BotPlugin):
         repo_name = match.group(1)
         iss_title = match.group(2)
         iss_description = match.group(3) if match.group(3) is not None else ''
-        extra_msg = '\nOpened by @{username} at [{backend}]({msg_link})'.format(
-            username=msg.frm.nick,
-            backend=self.bot_config.BACKEND,
-            msg_link=message_link(self, msg)
-        )
+
+        extra_parts = []
+        if msg.frm.nick:
+            extra_parts.append('by @{}'.format(msg.frm.nick))
+        msg_link = message_link(self, msg)
+        if msg_link:
+            extra_parts.append(
+                'at [{backend}]({msg_link})'.format(
+                    backend=self.bot_config.BACKEND,
+                    msg_link=message_link(self, msg)
+                )
+            )
+        else:
+            extra_parts.append('on {}'.format(self.bot_config.BACKEND))
+
+        extra_msg = '\nOpened {}'.format(' '.join(extra_parts))
 
         if repo_name in self.REPOS:
             repo = self.REPOS[repo_name]

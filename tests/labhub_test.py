@@ -11,7 +11,7 @@ from IGitt.GitHub.GitHubMergeRequest import GitHubMergeRequest
 from IGitt.GitLab.GitLabMergeRequest import GitLabMergeRequest
 from IGitt.GitHub.GitHubIssue import GitHubIssue
 
-from errbot.backends.test import TestBot
+from errbot.backends.test import Message, TestBot
 
 import plugins.labhub
 from plugins.labhub import LabHub
@@ -88,7 +88,6 @@ class TestLabHub(unittest.TestCase):
         plugins.labhub.GitHubToken.assert_called_with(None)
         plugins.labhub.GitLabPrivateToken.assert_called_with(None)
 
-
         labhub.REPOS = {'repository': self.mock_repo,
                         'repository.github.io': self.mock_repo}
 
@@ -96,14 +95,19 @@ class TestLabHub(unittest.TestCase):
                               'Here you go')
 
         labhub.REPOS['repository'].create_issue.assert_called_once_with(
-            'this is the title', 'bo\ndy\nOpened by @None at [text]()'
+            'this is the title', 'bo\ndy\nOpened on text'
         )
 
-        testbot.assertCommand('!new issue repository.github.io another title\nand body',
-                              'Here you go')
+        msg = Message('!new issue repository.github.io another title\nand body',
+                      'Here you go')
+        msg.extras['url'] = 'http://example.com'
+        msg.frm = testbot.bot.build_identifier('Jo')
+        msg.frm._nick = 'jo'
+
+        testbot.bot.callback_message(msg)
 
         labhub.REPOS['repository.github.io'].create_issue.assert_called_with(
-            'another title', 'and body\nOpened by @None at [text]()'
+            'another title', 'and body\nOpened by @jo at [text](http://example.com/)'
         )
 
         testbot.assertCommand('!new issue coala title', 'repository that does not exist')

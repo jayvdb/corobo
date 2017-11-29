@@ -12,11 +12,7 @@ def message_link(bot, msg):
     if backend == 'gitter':
         return 'https://gitter.im/{uri}?at={idd}'.format(uri=msg.frm.room.uri,
                                                          idd=msg.extras['id'])
-    elif backend == 'slack':
+    elif 'url' in msg.extras:
         return msg.extras['url']
-    elif backend == 'telegram':
-        return ''
-    elif backend == 'text':
-        return ''
     else:
-        raise NotImplementedError
+        return None
