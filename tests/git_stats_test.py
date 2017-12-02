@@ -1,38 +1,41 @@
 import logging
 from tempfile import mkdtemp
-from errbot import BotPlugin
 import unittest
-from unittest.mock import Mock, MagicMock, create_autospec, PropertyMock, patch
+from unittest.mock import create_autospec
 
 from IGitt.GitHub.GitHubMergeRequest import GitHubMergeRequest
 from IGitt.GitLab.GitLabMergeRequest import GitLabMergeRequest
 from IGitt.GitHub.GitHubIssue import GitHubIssue
 from IGitt.GitLab.GitLabIssue import GitLabIssue
 from git import Repo
-
-import github3
 import IGitt
+
 import plugins.git_stats
 import plugins.labhub
+
 from tests.helper import plugin_testbot
+
+
+class MockedGitStatsPlugin(plugins.git_stats.GitStats):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.dependencies = ['LabHub']
+
+    def get_plugin(self, name):
+        class FakeLabHub():
+            REPOS = None
+
+        return FakeLabHub()
 
 
 class TestGitStats(unittest.TestCase):
 
     def setUp(self):
-        plugins.git_stats.github3 = create_autospec(github3)
-        self.mock_org = create_autospec(github3.orgs.Organization)
-        self.mock_gh = create_autospec(github3.GitHub)
         self.mock_repo = create_autospec(IGitt.GitHub.GitHub.GitHubRepository)
-        plugins.git_stats.github3.login.return_value = self.mock_gh
-        self.mock_gh.organization.return_value = self.mock_org
-        plugins.git_stats.github3.organization.return_value = self.mock_org
-
-        self.plugin = plugins.git_stats.GitStats
-        self.plugin.__bases__ = (BotPlugin, )
 
     def test_pr_list(self):
-        git_stats, testbot = plugin_testbot(self.plugin, logging.ERROR)
+        git_stats, testbot = plugin_testbot(MockedGitStatsPlugin, logging.DEBUG)
         git_stats.activate()
 
         git_stats.REPOS = {'test': self.mock_repo}
