@@ -44,9 +44,7 @@ class LabHub(BotPlugin):
     GH_ORG_NAME = constants.GH_ORG_NAME
     GL_ORG_NAME = constants.GL_ORG_NAME
 
-    def __init__(self, bot, name=None):
-        super().__init__(bot, name)
-
+    def activate(self):
         teams = dict()
         try:
             gh = github3.login(token=os.environ.get('GH_TOKEN'))
@@ -86,6 +84,7 @@ class LabHub(BotPlugin):
             self.REPOS.update(self.gl_repos)
 
         self.invited_users = set()
+        super().activate()
 
     @property
     def TEAMS(self):

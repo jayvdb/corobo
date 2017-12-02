@@ -18,7 +18,7 @@ from plugins.labhub import LabHub
 
 from tests.helper import plugin_testbot
 
-class TestLabHub(unittest.TestCase):
+class LabHubTestBase(unittest.TestCase):
 
     def setUp(self):
         plugins.labhub.github3 = create_autospec(github3)
@@ -34,6 +34,9 @@ class TestLabHub(unittest.TestCase):
         self.mock_gh.organization.return_value = self.mock_org
         self.mock_org.iter_teams.return_value = [self.mock_team]
         plugins.labhub.github3.organization.return_value = self.mock_org
+
+
+class TestLabHubBase(LabHubTestBase):
 
     def test_invite_cmd(self):
         teams = {
