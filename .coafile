@@ -21,6 +21,9 @@ keywords = pdb
 bears = PEP8Bear, PycodestyleBear
 default_actions = PEP8Bear: ApplyPatchAction
 
+[all.pyflakes]
+bears = PyFlakesBear
+
 [all.linelength]
 bears = LineLengthBear
 
