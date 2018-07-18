@@ -109,7 +109,6 @@ class Coatils(BotPlugin):
         Example: `ls bears python python3`
         """
         langs = list(map(lambda x: x.lower(), match.group(1).split()))
-        Coatils.all_langs()
 
         bears = client.list.bears.get().json()
         bears = [{**{'name': bear}, **content}
