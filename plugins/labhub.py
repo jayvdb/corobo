@@ -246,8 +246,13 @@ class LabHub(DefaultConfigMixin, BotPlugin):
         except KeyError:
             yield 'Repository doesn\'t exist.'
         else:
-            if user in iss.assignees:
-                iss.unassign(user)
+            if iss.repository.hoster == 'github':
+                user_obj = self.IGH.get_user(user)
+            elif iss.repository.hoster == 'github':
+                user_obj = self.IGL.get_user(user)
+
+            if user_obj in iss.assignees:
+                iss.unassign(user_obj)
                 yield '@{}, you are unassigned now :+1:'.format(user)
             else:
                 yield 'You are not an assignee on the issue.'
@@ -394,9 +399,14 @@ class LabHub(DefaultConfigMixin, BotPlugin):
         except KeyError:
             yield 'Repository doesn\'t exist.'
         else:
+            if iss.repository.hoster == 'github':
+                user_obj = self.IGH.get_user(user)
+            elif iss.repository.hoster == 'github':
+                user_obj = self.IGL.get_user(user)
+
             if not iss.assignees:
                 if eligible(user, iss):
-                    iss.assign(user)
+                    iss.assign(user_obj)
                     yield ('Congratulations! You\'ve been assigned to the '
                            'issue. :tada:')
                 else:
@@ -406,7 +416,7 @@ class LabHub(DefaultConfigMixin, BotPlugin):
                     ).render(
                         organization=self.GH_ORG_NAME,
                     )
-            elif user in iss.assignees:
+            elif user_obj in iss.assignees:
                 yield ('The issue is already assigned to you.')
             else:
                 yield tenv().get_template(
